@@ -1,0 +1,23 @@
+name: 'Github Sync Branches'
+description: '分支同步：当前分支更新，自动同步到目标分支代码，有合并限制的分支可自动创建一个PR，同时发送更新分支commits信息'
+author: 'Autumn'
+branding:
+  icon: 'git-branch'
+  color: 'green'
+inputs:
+  githubToken:
+    required: true
+    description: 'github仓库的访问权限token'
+  syncBranches:
+    required: true
+    description: 'head分支更新后要同步的分支'
+  headBranch:
+    required: false
+    description: 'action执行的主分支分支，默认是当前更新的文字，可自定义'
+  wechatKey:
+    required: false
+    description: '企业微信机器人的key'
+    default: ''
+runs:
+  using: 'node12'
+  main: 'dist/index.js'
