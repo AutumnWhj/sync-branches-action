@@ -127,7 +127,7 @@ exports.formatCommits = formatCommits;
 const composeMsg = (info) => {
     const { commitsList, head, repository } = info || {};
     if (!commitsList.length) {
-        return `#### 项目${repository}，分支${head}环境正在部署~~,无新commit`;
+        return `#### 🎉项目${repository}，分支${head}环境正在部署~~,无新commit`;
     }
     const commitsString = commitsList
         .map((item) => {
@@ -137,7 +137,7 @@ const composeMsg = (info) => {
     })
         .join('')
         .replace(/"/g, '');
-    return `#### 项目${repository}，分支${head}环境正在部署~~\n
+    return `#### 🎉项目${repository}，分支${head}环境正在部署~~\n
   <font color="warning">本次构建commit如下：</font>\n
   ${commitsString}`;
 };
@@ -171,7 +171,7 @@ const createPullRequest = (params) => __awaiter(void 0, void 0, void 0, function
             },
             url: getPrUrl(repository),
             data: {
-                title: `项目${repository}PR：【${headBranch}】分支合并到【${baseBranch}】`,
+                title: `🤔项目${repository}PR：【${headBranch}】分支合并到【${baseBranch}】`,
                 base: baseBranch,
                 head: headBranch
             }
@@ -179,7 +179,7 @@ const createPullRequest = (params) => __awaiter(void 0, void 0, void 0, function
         const result = {
             msgtype: 'text',
             text: {
-                content: `项目${repository}：【${headBranch}】分支合并到【${baseBranch}】有新PR，请及时处理~`,
+                content: `🤔项目${repository}：【${headBranch}】分支合并到【${baseBranch}】有新PR，请及时处理~`,
                 mentioned_mobile_list: ['@all']
             }
         };
@@ -226,6 +226,8 @@ const mergeBranch = (params) => __awaiter(void 0, void 0, void 0, function* () {
     const arr = syncBranches.split(',');
     const branches = [...new Set(arr)];
     for (const baseBranch of branches) {
+        if (!baseBranch)
+            return;
         try {
             yield (0, axios_1.default)({
                 method: 'POST',
@@ -244,16 +246,21 @@ const mergeBranch = (params) => __awaiter(void 0, void 0, void 0, function* () {
         catch (error) {
             console.error('mergeBranch----', error);
             const { response } = error || {};
-            const { status, statusText } = response || {};
-            if (status === 409 || statusText === 'Conflict') {
+            const { status, statusText, data } = response || {};
+            const { message } = data || {};
+            if (message.includes('protected branch')) {
                 const statusParams = Object.assign(Object.assign({}, params), { baseBranch });
                 yield (0, base_1.createPullRequest)(statusParams);
                 return;
             }
+            let conflict = '';
+            if (status === 409 || statusText === 'Conflict') {
+                conflict = '请解决存在的冲突';
+            }
             const result = {
                 msgtype: 'text',
                 text: {
-                    content: `项目${repository}:【${headBranch}】分支合并到【${baseBranch}】出错，请查看是否存在冲突~`,
+                    content: `❌项目${repository}:【${headBranch}】分支合并到【${baseBranch}】出错，出错原因：${message}${conflict}`,
                     mentioned_mobile_list: ['@all']
                 }
             };
@@ -311,6 +318,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+/* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const core = __importStar(__nccwpck_require__(2186));
 const github = __importStar(__nccwpck_require__(5438));
@@ -320,6 +328,7 @@ const base_1 = __nccwpck_require__(7835);
 const repoPath = process.env.GITHUB_WORKSPACE;
 const pushPayload = github.context.payload;
 const ref = github.context.ref;
+console.log('pushPayload', pushPayload);
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {

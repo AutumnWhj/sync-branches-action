@@ -36,7 +36,7 @@ export const formatCommits = (commits: any[]): any[] => {
 export const composeMsg = (info: any): string => {
   const {commitsList, head, repository} = info || {}
   if (!commitsList.length) {
-    return `#### 项目${repository}，分支${head}环境正在部署~~,无新commit`
+    return `#### 🎉项目${repository}，分支${head}环境正在部署~~,无新commit`
   }
   const commitsString: string = commitsList
     .map((item: any) => {
@@ -47,7 +47,7 @@ export const composeMsg = (info: any): string => {
     .join('')
     .replace(/"/g, '')
 
-  return `#### 项目${repository}，分支${head}环境正在部署~~\n
+  return `#### 🎉项目${repository}，分支${head}环境正在部署~~\n
   <font color="warning">本次构建commit如下：</font>\n
   ${commitsString}`
 }
@@ -82,7 +82,7 @@ export const createPullRequest = async (
       },
       url: getPrUrl(repository),
       data: {
-        title: `项目${repository}PR：【${headBranch}】分支合并到【${baseBranch}】`,
+        title: `🤔项目${repository}PR：【${headBranch}】分支合并到【${baseBranch}】`,
         base: baseBranch,
         head: headBranch
       }
@@ -90,7 +90,7 @@ export const createPullRequest = async (
     const result = {
       msgtype: 'text',
       text: {
-        content: `项目${repository}：【${headBranch}】分支合并到【${baseBranch}】有新PR，请及时处理~`,
+        content: `🤔项目${repository}：【${headBranch}】分支合并到【${baseBranch}】有新PR，请及时处理~`,
         mentioned_mobile_list: ['@all']
       }
     }
