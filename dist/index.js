@@ -225,13 +225,12 @@ const mergeBranch = (params) => __awaiter(void 0, void 0, void 0, function* () {
     const { repository, githubToken, headBranch, syncBranches, wechatKey } = params;
     console.log('syncBranches-----', syncBranches);
     const arr = syncBranches.split(',');
-    const branches = [...new Set(arr)];
+    const branches = [...new Set(arr)].filter(Boolean);
     console.log('branches-----', branches);
     for (const baseBranch of branches) {
-        if (!baseBranch)
-            return;
+        console.log('baseBranch ---- ', baseBranch);
         try {
-            yield (0, axios_1.default)({
+            const message = yield (0, axios_1.default)({
                 method: 'POST',
                 headers: {
                     Accept: 'application/vnd.github.v3+json',
@@ -244,6 +243,7 @@ const mergeBranch = (params) => __awaiter(void 0, void 0, void 0, function* () {
                     head: headBranch
                 }
             });
+            console.log('baseBranch ---- message', message);
         }
         catch (error) {
             console.error('mergeBranch----', error);
@@ -334,6 +334,7 @@ function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const configFilePath = (0, base_1.getConfigPathRelative)(repoPath, 'package.json');
+            console.log('configFilePath-----', configFilePath);
             const configJson = yield Promise.resolve().then(() => __importStar(require(configFilePath)));
             const { syncBranches: packageJson } = configJson || {};
             console.log('packageJson-----', packageJson);
@@ -347,8 +348,7 @@ function run() {
             core.debug(`wechatKey:${wechatKey}`);
             const { repository, commits } = pushPayload || {};
             const { full_name } = repository || {};
-            const refs = ref.split('/');
-            const branch = headBranch || refs[refs.length - 1];
+            const branch = headBranch || ref.replace('refs/heads/', '');
             console.log('branch-----', branch);
             const params = {
                 repository: full_name,
