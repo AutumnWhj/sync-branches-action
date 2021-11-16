@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from 'axios'
+import path from 'path'
 export interface ActionInputParams {
   githubToken: string
   syncBranches: string
@@ -97,4 +98,10 @@ export const createPullRequest = async (
   } catch (error) {
     console.error('createPullRequest--error', error)
   }
+}
+export const getConfigPathRelative = (
+  repoPath: string,
+  location: string
+): string => {
+  return path.resolve(repoPath, location)
 }

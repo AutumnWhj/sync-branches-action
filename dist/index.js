@@ -97,10 +97,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.createPullRequest = exports.sendMsgToWeChat = exports.composeMsg = exports.formatCommits = exports.getMergeUrl = void 0;
+exports.getConfigPathRelative = exports.createPullRequest = exports.sendMsgToWeChat = exports.composeMsg = exports.formatCommits = exports.getMergeUrl = void 0;
 /* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const axios_1 = __importDefault(__nccwpck_require__(6545));
+const path_1 = __importDefault(__nccwpck_require__(5622));
 const getMergeUrl = (repository) => {
     return `https://api.github.com/repos/${repository}/merges`;
 };
@@ -189,6 +190,10 @@ const createPullRequest = (params) => __awaiter(void 0, void 0, void 0, function
     }
 });
 exports.createPullRequest = createPullRequest;
+const getConfigPathRelative = (repoPath, location) => {
+    return path_1.default.resolve(repoPath, location);
+};
+exports.getConfigPathRelative = getConfigPathRelative;
 
 
 /***/ }),
@@ -305,16 +310,23 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+/* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const core = __importStar(__nccwpck_require__(2186));
 const github = __importStar(__nccwpck_require__(5438));
 const action_1 = __nccwpck_require__(9139);
+const base_1 = __nccwpck_require__(7835);
+// debug is only output if you set the secret `ACTIONS_STEP_DEBUG` to true
+const repoPath = process.env.GITHUB_WORKSPACE;
 const pushPayload = github.context.payload;
 const ref = github.context.ref;
-// debug is only output if you set the secret `ACTIONS_STEP_DEBUG` to true
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
+            const configFilePath = (0, base_1.getConfigPathRelative)(repoPath, 'package.json');
+            console.log('configFilePath-----', configFilePath);
+            const configJson = yield Promise.resolve().then(() => __importStar(require(configFilePath)));
+            console.log('configJson-----', configJson);
             const githubToken = core.getInput('githubToken');
             const headBranch = core.getInput('headBranch');
             const syncBranches = core.getInput('syncBranches');

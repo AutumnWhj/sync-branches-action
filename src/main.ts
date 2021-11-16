@@ -1,13 +1,20 @@
+/* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import * as core from '@actions/core'
 import * as github from '@actions/github'
 import {action} from './action'
+import {getConfigPathRelative} from './helper/base'
+// debug is only output if you set the secret `ACTIONS_STEP_DEBUG` to true
+const repoPath: any = process.env.GITHUB_WORKSPACE
 const pushPayload: any = github.context.payload
 const ref = github.context.ref
-// debug is only output if you set the secret `ACTIONS_STEP_DEBUG` to true
 
 async function run(): Promise<void> {
   try {
+    const configFilePath = getConfigPathRelative(repoPath, 'package.json')
+    console.log('configFilePath-----', configFilePath)
+    const configJson = await import(configFilePath)
+    console.log('configJson-----', configJson)
     const githubToken: string = core.getInput('githubToken')
     const headBranch: string = core.getInput('headBranch')
     const syncBranches: string = core.getInput('syncBranches')
