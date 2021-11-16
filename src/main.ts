@@ -13,7 +13,8 @@ async function run(): Promise<void> {
   try {
     const configFilePath = getConfigPathRelative(repoPath, 'package.json')
     console.log('configFilePath-----', configFilePath)
-    const configJson = await import(configFilePath)
+    const configJson: any = await import(configFilePath)
+    const {syncBranches: packageJson} = configJson || {}
     console.log('configJson-----', configJson)
     const githubToken: string = core.getInput('githubToken')
     const headBranch: string = core.getInput('headBranch')
@@ -34,7 +35,7 @@ async function run(): Promise<void> {
       headBranch: headBranch || branch,
       baseBranch: '',
       commits,
-      syncBranches,
+      syncBranches: `${syncBranches},${packageJson}`,
       wechatKey: `https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=${wechatKey}`
     }
     await action(params)

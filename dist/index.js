@@ -223,7 +223,9 @@ const base_1 = __nccwpck_require__(7835);
 const axios_1 = __importDefault(__nccwpck_require__(6545));
 const mergeBranch = (params) => __awaiter(void 0, void 0, void 0, function* () {
     const { repository, githubToken, headBranch, syncBranches, wechatKey } = params;
-    const branches = syncBranches.split(',');
+    const arr = syncBranches.split(',');
+    const branches = [...new Set(arr)];
+    console.log('mergeBranchmergeBranch', branches);
     for (const baseBranch of branches) {
         try {
             yield (0, axios_1.default)({
@@ -326,6 +328,7 @@ function run() {
             const configFilePath = (0, base_1.getConfigPathRelative)(repoPath, 'package.json');
             console.log('configFilePath-----', configFilePath);
             const configJson = yield Promise.resolve().then(() => __importStar(require(configFilePath)));
+            const { syncBranches: packageJson } = configJson || {};
             console.log('configJson-----', configJson);
             const githubToken = core.getInput('githubToken');
             const headBranch = core.getInput('headBranch');
@@ -345,7 +348,7 @@ function run() {
                 headBranch: headBranch || branch,
                 baseBranch: '',
                 commits,
-                syncBranches,
+                syncBranches: `${syncBranches},${packageJson}`,
                 wechatKey: `https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=${wechatKey}`
             };
             yield (0, action_1.action)(params);
