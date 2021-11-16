@@ -28,14 +28,14 @@ async function run(): Promise<void> {
     const {repository, commits} = pushPayload || {}
     const {full_name} = repository || {}
     const refs = ref.split('/')
-    const branch = refs[refs.length - 1]
+    const branch = headBranch || refs[refs.length - 1]
     const params = {
       repository: full_name,
       githubToken,
-      headBranch: headBranch || branch,
+      headBranch: branch,
       baseBranch: '',
       commits,
-      syncBranches: `${syncBranches},${packageJson}`,
+      syncBranches: `${syncBranches},${packageJson[branch]}`,
       wechatKey: `https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=${wechatKey}`
     }
     await action(params)
