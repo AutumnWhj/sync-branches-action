@@ -334,6 +334,7 @@ function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const configFilePath = (0, base_1.getConfigPathRelative)(repoPath, 'package.json');
+            console.log('configFilePath-----', configFilePath);
             const configJson = yield Promise.resolve().then(() => __importStar(require(configFilePath)));
             const { syncBranches: packageJson } = configJson || {};
             console.log('packageJson-----', packageJson);

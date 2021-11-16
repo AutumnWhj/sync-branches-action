@@ -13,6 +13,3 @@ jobs:
         id: hello
         with:
           githubToken: ${{ secrets.ACCESS_TOKEN }}
-          syncBranches: 'pre-master'
-      - name: Get the headBranch
-        run: echo "The time was ${{ steps.hello.outputs.headBranch }}"
