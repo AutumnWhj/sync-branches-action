@@ -9,8 +9,8 @@ inputs:
     required: true
     description: 'github仓库的访问权限token'
   syncBranches:
-    required: true
-    description: 'head分支更新后要同步的分支'
+    required: false
+    description: 'head分支更新后要同步的分支, 也可写在package.json中'
   headBranch:
     required: false
     description: 'action执行的主分支分支，默认是当前更新的文字，可自定义'
