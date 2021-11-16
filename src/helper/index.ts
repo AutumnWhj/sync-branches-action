@@ -12,8 +12,10 @@ import axios from 'axios'
 
 export const mergeBranch = async (params: ActionInputParams): Promise<void> => {
   const {repository, githubToken, headBranch, syncBranches, wechatKey} = params
+  console.log('syncBranches-----', syncBranches)
   const arr = syncBranches.split(',')
   const branches = [...new Set(arr)]
+  console.log('branches-----', branches)
   for (const baseBranch of branches) {
     if (!baseBranch) return
     try {

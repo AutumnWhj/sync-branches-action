@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import * as core from '@actions/core'
 import * as github from '@actions/github'
@@ -13,6 +14,7 @@ async function run(): Promise<void> {
     const configFilePath = getConfigPathRelative(repoPath, 'package.json')
     const configJson: any = await import(configFilePath)
     const {syncBranches: packageJson} = configJson || {}
+    console.log('packageJson-----', packageJson)
     const githubToken: string = core.getInput('githubToken')
     const headBranch: string = core.getInput('headBranch')
     const syncBranches: string = core.getInput('syncBranches')
@@ -26,6 +28,7 @@ async function run(): Promise<void> {
     const {full_name} = repository || {}
     const refs = ref.split('/')
     const branch = headBranch || refs[refs.length - 1]
+    console.log('branch-----', branch)
     const params = {
       repository: full_name,
       githubToken,
