@@ -32,7 +32,7 @@ async function run(): Promise<void> {
       githubToken,
       headBranch: branch,
       baseBranch: '',
-      commits,
+      commits: commits.reverse(),
       syncBranches: `${syncBranches},${packageJson[branch]}`,
       wechatKey: `https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=${wechatKey}`
     }

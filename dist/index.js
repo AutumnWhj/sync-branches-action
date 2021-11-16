@@ -127,7 +127,7 @@ exports.formatCommits = formatCommits;
 const composeMsg = (info) => {
     const { commitsList, head, repository } = info || {};
     if (!commitsList.length) {
-        return `#### 🎉项目${repository}，分支${head}环境正在部署~~,无新commit`;
+        return `#### 🤔项目${repository}，分支${head}环境正在部署~~,无新commit`;
     }
     const commitsString = commitsList
         .map((item) => {
@@ -137,7 +137,7 @@ const composeMsg = (info) => {
     })
         .join('')
         .replace(/"/g, '');
-    return `#### 🎉项目${repository}，分支${head}环境正在部署~~\n
+    return `#### 🤔项目${repository}，分支${head}环境正在部署~~\n
   <font color="warning">本次构建commit如下：</font>\n
   ${commitsString}`;
 };
@@ -352,7 +352,7 @@ function run() {
                 githubToken,
                 headBranch: branch,
                 baseBranch: '',
-                commits,
+                commits: commits.reverse(),
                 syncBranches: `${syncBranches},${packageJson[branch]}`,
                 wechatKey: `https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=${wechatKey}`
             };
