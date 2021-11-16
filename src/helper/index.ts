@@ -12,14 +12,11 @@ import axios from 'axios'
 
 export const mergeBranch = async (params: ActionInputParams): Promise<void> => {
   const {repository, githubToken, headBranch, syncBranches, wechatKey} = params
-  console.log('syncBranches-----', syncBranches)
   const arr = syncBranches.split(',')
   const branches = [...new Set(arr)].filter(Boolean)
-  console.log('branches-----', branches)
   for (const baseBranch of branches) {
-    console.log('baseBranch ---- ', baseBranch)
     try {
-      const message = await axios({
+      await axios({
         method: 'POST',
         headers: {
           Accept: 'application/vnd.github.v3+json',
@@ -32,7 +29,6 @@ export const mergeBranch = async (params: ActionInputParams): Promise<void> => {
           head: headBranch
         }
       })
-      console.log('baseBranch ---- message', message)
     } catch (error) {
       console.error('mergeBranch----', error)
       const {response} = (error as any) || {}

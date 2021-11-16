@@ -223,14 +223,11 @@ const base_1 = __nccwpck_require__(7835);
 const axios_1 = __importDefault(__nccwpck_require__(6545));
 const mergeBranch = (params) => __awaiter(void 0, void 0, void 0, function* () {
     const { repository, githubToken, headBranch, syncBranches, wechatKey } = params;
-    console.log('syncBranches-----', syncBranches);
     const arr = syncBranches.split(',');
     const branches = [...new Set(arr)].filter(Boolean);
-    console.log('branches-----', branches);
     for (const baseBranch of branches) {
-        console.log('baseBranch ---- ', baseBranch);
         try {
-            const message = yield (0, axios_1.default)({
+            yield (0, axios_1.default)({
                 method: 'POST',
                 headers: {
                     Accept: 'application/vnd.github.v3+json',
@@ -243,7 +240,6 @@ const mergeBranch = (params) => __awaiter(void 0, void 0, void 0, function* () {
                     head: headBranch
                 }
             });
-            console.log('baseBranch ---- message', message);
         }
         catch (error) {
             console.error('mergeBranch----', error);
