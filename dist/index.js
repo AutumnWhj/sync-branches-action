@@ -225,7 +225,6 @@ const mergeBranch = (params) => __awaiter(void 0, void 0, void 0, function* () {
     const { repository, githubToken, headBranch, syncBranches, wechatKey } = params;
     const arr = syncBranches.split(',');
     const branches = [...new Set(arr)];
-    console.log('mergeBranchmergeBranch', branches);
     for (const baseBranch of branches) {
         try {
             yield (0, axios_1.default)({
@@ -312,7 +311,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-/* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const core = __importStar(__nccwpck_require__(2186));
 const github = __importStar(__nccwpck_require__(5438));
@@ -326,10 +324,8 @@ function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const configFilePath = (0, base_1.getConfigPathRelative)(repoPath, 'package.json');
-            console.log('configFilePath-----', configFilePath);
             const configJson = yield Promise.resolve().then(() => __importStar(require(configFilePath)));
             const { syncBranches: packageJson } = configJson || {};
-            console.log('configJson-----', configJson);
             const githubToken = core.getInput('githubToken');
             const headBranch = core.getInput('headBranch');
             const syncBranches = core.getInput('syncBranches');

@@ -14,7 +14,6 @@ export const mergeBranch = async (params: ActionInputParams): Promise<void> => {
   const {repository, githubToken, headBranch, syncBranches, wechatKey} = params
   const arr = syncBranches.split(',')
   const branches = [...new Set(arr)]
-  console.log('mergeBranchmergeBranch', branches)
   for (const baseBranch of branches) {
     try {
       await axios({
