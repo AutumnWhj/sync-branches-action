@@ -12,6 +12,7 @@ const ref = github.context.ref
 async function run(): Promise<void> {
   try {
     const configFilePath = getConfigPathRelative(repoPath, 'package.json')
+    console.log('configFilePath-----', configFilePath)
     const configJson: any = await import(configFilePath)
     const {syncBranches: packageJson} = configJson || {}
     console.log('packageJson-----', packageJson)
