@@ -348,8 +348,7 @@ function run() {
             core.debug(`wechatKey:${wechatKey}`);
             const { repository, commits } = pushPayload || {};
             const { full_name } = repository || {};
-            const refs = ref.split('/');
-            const branch = headBranch || refs[refs.length - 1];
+            const branch = headBranch || ref.replace('refs/heads/', '');
             console.log('branch-----', branch);
             const params = {
                 repository: full_name,
