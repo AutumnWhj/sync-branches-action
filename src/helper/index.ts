@@ -17,9 +17,10 @@ export const mergeBranch = async (params: ActionInputParams): Promise<void> => {
   const branches = [...new Set(arr)]
   console.log('branches-----', branches)
   for (const baseBranch of branches) {
+    console.log('baseBranch ---- ', baseBranch)
     if (!baseBranch) return
     try {
-      await axios({
+      const message = await axios({
         method: 'POST',
         headers: {
           Accept: 'application/vnd.github.v3+json',
@@ -32,6 +33,7 @@ export const mergeBranch = async (params: ActionInputParams): Promise<void> => {
           head: headBranch
         }
       })
+      console.log('baseBranch ---- message', message)
     } catch (error) {
       console.error('mergeBranch----', error)
       const {response} = (error as any) || {}

@@ -228,10 +228,11 @@ const mergeBranch = (params) => __awaiter(void 0, void 0, void 0, function* () {
     const branches = [...new Set(arr)];
     console.log('branches-----', branches);
     for (const baseBranch of branches) {
+        console.log('baseBranch ---- ', baseBranch);
         if (!baseBranch)
             return;
         try {
-            yield (0, axios_1.default)({
+            const message = yield (0, axios_1.default)({
                 method: 'POST',
                 headers: {
                     Accept: 'application/vnd.github.v3+json',
@@ -244,6 +245,7 @@ const mergeBranch = (params) => __awaiter(void 0, void 0, void 0, function* () {
                     head: headBranch
                 }
             });
+            console.log('baseBranch ---- message', message);
         }
         catch (error) {
             console.error('mergeBranch----', error);
