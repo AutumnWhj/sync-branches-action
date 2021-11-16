@@ -318,7 +318,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-/* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const core = __importStar(__nccwpck_require__(2186));
 const github = __importStar(__nccwpck_require__(5438));
@@ -328,7 +327,6 @@ const base_1 = __nccwpck_require__(7835);
 const repoPath = process.env.GITHUB_WORKSPACE;
 const pushPayload = github.context.payload;
 const ref = github.context.ref;
-console.log('pushPayload', pushPayload);
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {

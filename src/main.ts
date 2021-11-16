@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import * as core from '@actions/core'
 import * as github from '@actions/github'
@@ -8,7 +7,7 @@ import {getConfigPathRelative} from './helper/base'
 const repoPath: any = process.env.GITHUB_WORKSPACE
 const pushPayload: any = github.context.payload
 const ref = github.context.ref
-console.log('pushPayload', pushPayload)
+
 async function run(): Promise<void> {
   try {
     const configFilePath = getConfigPathRelative(repoPath, 'package.json')
