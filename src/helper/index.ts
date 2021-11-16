@@ -14,11 +14,10 @@ export const mergeBranch = async (params: ActionInputParams): Promise<void> => {
   const {repository, githubToken, headBranch, syncBranches, wechatKey} = params
   console.log('syncBranches-----', syncBranches)
   const arr = syncBranches.split(',')
-  const branches = [...new Set(arr)]
+  const branches = [...new Set(arr)].filter(Boolean)
   console.log('branches-----', branches)
   for (const baseBranch of branches) {
     console.log('baseBranch ---- ', baseBranch)
-    if (!baseBranch) return
     try {
       const message = await axios({
         method: 'POST',

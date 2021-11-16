@@ -225,12 +225,10 @@ const mergeBranch = (params) => __awaiter(void 0, void 0, void 0, function* () {
     const { repository, githubToken, headBranch, syncBranches, wechatKey } = params;
     console.log('syncBranches-----', syncBranches);
     const arr = syncBranches.split(',');
-    const branches = [...new Set(arr)];
+    const branches = [...new Set(arr)].filter(Boolean);
     console.log('branches-----', branches);
     for (const baseBranch of branches) {
         console.log('baseBranch ---- ', baseBranch);
-        if (!baseBranch)
-            return;
         try {
             const message = yield (0, axios_1.default)({
                 method: 'POST',
