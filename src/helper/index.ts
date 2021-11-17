@@ -14,10 +14,11 @@ export const mergeBranch = async (params: ActionInputParams): Promise<void> => {
   const {repository, githubToken, headBranch, syncBranches, wechatKey} = params
   const arr = syncBranches.split(',')
   const branches = [...new Set(arr)].filter(Boolean)
-  for (const baseBranch of branches) {
-    const base = baseBranch.trim()
+  // eslint-disable-next-line @typescript-eslint/prefer-for-of
+  for (let i = 0; i < branches.length; i++) {
+    const baseBranch = branches[i].trim()
     try {
-      if (base) {
+      if (baseBranch) {
         await axios({
           method: 'POST',
           headers: {
@@ -27,7 +28,7 @@ export const mergeBranch = async (params: ActionInputParams): Promise<void> => {
           },
           url: getMergeUrl(repository),
           data: {
-            base,
+            base: baseBranch,
             head: headBranch
           }
         })
@@ -40,7 +41,7 @@ export const mergeBranch = async (params: ActionInputParams): Promise<void> => {
       if (message.includes('protected branch')) {
         const statusParams = {
           ...params,
-          baseBranch: base
+          baseBranch
         }
         await createPullRequest(statusParams)
         return
@@ -52,7 +53,7 @@ export const mergeBranch = async (params: ActionInputParams): Promise<void> => {
       const result = {
         msgtype: 'text',
         text: {
-          content: `❌项目${repository}:【${headBranch}】分支合并到【${base}】出错，出错原因：${message}${conflict}`,
+          content: `❌项目${repository}:【${headBranch}】分支合并到【${baseBranch}】出错，出错原因：${message}${conflict}`,
           mentioned_mobile_list: ['@all']
         }
       }
