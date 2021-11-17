@@ -36,7 +36,7 @@ export const formatCommits = (commits: any[]): any[] => {
 export const composeMsg = (info: any): string => {
   const {commitsList, head, repository} = info || {}
   if (!commitsList.length) {
-    return `#### 🤔项目${repository}，分支${head}环境正在部署~~,无新commit`
+    return `🤔项目${repository}，分支${head}环境正在部署~~,无新commit`
   }
   const commitsString: string = commitsList
     .map((item: any) => {

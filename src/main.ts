@@ -8,7 +8,7 @@ import {getConfigPathRelative} from './helper/base'
 const repoPath: any = process.env.GITHUB_WORKSPACE
 const pushPayload: any = github.context.payload
 const ref = github.context.ref
-
+console.log('github.context', github.context)
 async function run(): Promise<void> {
   try {
     const configFilePath = getConfigPathRelative(repoPath, 'package.json')

@@ -15,20 +15,23 @@ export const mergeBranch = async (params: ActionInputParams): Promise<void> => {
   const arr = syncBranches.split(',')
   const branches = [...new Set(arr)].filter(Boolean)
   for (const baseBranch of branches) {
+    const base = baseBranch.trim()
     try {
-      await axios({
-        method: 'POST',
-        headers: {
-          Accept: 'application/vnd.github.v3+json',
-          'content-type': 'application/json',
-          Authorization: `Bearer ${githubToken}`
-        },
-        url: getMergeUrl(repository),
-        data: {
-          base: baseBranch.trim(),
-          head: headBranch
-        }
-      })
+      if (base) {
+        await axios({
+          method: 'POST',
+          headers: {
+            Accept: 'application/vnd.github.v3+json',
+            'content-type': 'application/json',
+            Authorization: `Bearer ${githubToken}`
+          },
+          url: getMergeUrl(repository),
+          data: {
+            base,
+            head: headBranch
+          }
+        })
+      }
     } catch (error) {
       console.error('mergeBranch----', error)
       const {response} = (error as any) || {}
@@ -37,7 +40,7 @@ export const mergeBranch = async (params: ActionInputParams): Promise<void> => {
       if (message.includes('protected branch')) {
         const statusParams = {
           ...params,
-          baseBranch
+          baseBranch: base
         }
         await createPullRequest(statusParams)
         return
@@ -49,7 +52,7 @@ export const mergeBranch = async (params: ActionInputParams): Promise<void> => {
       const result = {
         msgtype: 'text',
         text: {
-          content: `❌项目${repository}:【${headBranch}】分支合并到【${baseBranch}】出错，出错原因：${message}${conflict}`,
+          content: `❌项目${repository}:【${headBranch}】分支合并到【${base}】出错，出错原因：${message}${conflict}`,
           mentioned_mobile_list: ['@all']
         }
       }
