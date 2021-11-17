@@ -99,7 +99,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.getConfigPathRelative = exports.createPullRequest = exports.sendMsgToWeChat = exports.composeMsg = exports.formatCommits = exports.getMergeUrl = void 0;
+exports.getTiggerBranches = exports.getSyncBranches = exports.getConfigPathRelative = exports.createPullRequest = exports.sendMsgToWeChat = exports.composeMsg = exports.formatCommits = exports.getMergeUrl = void 0;
 /* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const axios_1 = __importDefault(__nccwpck_require__(6545));
@@ -196,6 +196,27 @@ const getConfigPathRelative = (repoPath, location) => {
     return path_1.default.resolve(repoPath, location);
 };
 exports.getConfigPathRelative = getConfigPathRelative;
+const getSyncBranches = (info) => {
+    const { syncBranches, packageJson, branch } = info || {};
+    if (packageJson[branch]) {
+        return `${syncBranches},${packageJson[branch]}`;
+    }
+    return syncBranches;
+};
+exports.getSyncBranches = getSyncBranches;
+const getTiggerBranches = (info) => {
+    const { headBranch, ref } = info || {};
+    if (ref.includes('refs/heads/')) {
+        return ref.replace('refs/heads/', '');
+    }
+    if (ref.includes('refs/tags/release/')) {
+        const commitMsg = ref.replace('refs/tags/release/', '');
+        const index = commitMsg.lastIndexOf('-v');
+        return commitMsg.slice(0, index);
+    }
+    return headBranch;
+};
+exports.getTiggerBranches = getTiggerBranches;
 
 
 /***/ }),
@@ -326,8 +347,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const core = __importStar(__nccwpck_require__(2186));
 const github = __importStar(__nccwpck_require__(5438));
-const action_1 = __nccwpck_require__(9139);
 const base_1 = __nccwpck_require__(7835);
+const action_1 = __nccwpck_require__(9139);
 // debug is only output if you set the secret `ACTIONS_STEP_DEBUG` to true
 const repoPath = process.env.GITHUB_WORKSPACE;
 const pushPayload = github.context.payload;
@@ -351,7 +372,7 @@ function run() {
             core.debug(`wechatKey:${wechatKey}`);
             const { repository, commits } = pushPayload || {};
             const { full_name } = repository || {};
-            const branch = headBranch || ref.replace('refs/heads/', '');
+            const branch = (0, base_1.getTiggerBranches)({ headBranch, ref });
             console.log('branch-----', branch);
             const params = {
                 repository: full_name,
@@ -359,7 +380,7 @@ function run() {
                 headBranch: branch,
                 baseBranch: '',
                 commits: commits.reverse(),
-                syncBranches: `${syncBranches},${packageJson[branch]}`,
+                syncBranches: (0, base_1.getSyncBranches)({ syncBranches, packageJson, branch }),
                 wechatKey: `https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=${wechatKey}`
             };
             yield (0, action_1.action)(params);

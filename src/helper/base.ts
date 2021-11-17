@@ -105,3 +105,23 @@ export const getConfigPathRelative = (
 ): string => {
   return path.resolve(repoPath, location)
 }
+
+export const getSyncBranches = (info: any): string => {
+  const {syncBranches, packageJson, branch} = info || {}
+  if (packageJson[branch]) {
+    return `${syncBranches},${packageJson[branch]}`
+  }
+  return syncBranches
+}
+export const getTiggerBranches = (info: any): string => {
+  const {headBranch, ref} = info || {}
+  if (ref.includes('refs/heads/')) {
+    return ref.replace('refs/heads/', '')
+  }
+  if (ref.includes('refs/tags/release/')) {
+    const commitMsg = ref.replace('refs/tags/release/', '')
+    const index = commitMsg.lastIndexOf('-v')
+    return commitMsg.slice(0, index)
+  }
+  return headBranch
+}

@@ -2,13 +2,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import * as core from '@actions/core'
 import * as github from '@actions/github'
+import {
+  getConfigPathRelative,
+  getSyncBranches,
+  getTiggerBranches
+} from './helper/base'
 import {action} from './action'
-import {getConfigPathRelative} from './helper/base'
 // debug is only output if you set the secret `ACTIONS_STEP_DEBUG` to true
 const repoPath: any = process.env.GITHUB_WORKSPACE
 const pushPayload: any = github.context.payload
 const ref = github.context.ref
 console.log('github.context', github.context)
+
 async function run(): Promise<void> {
   try {
     const configFilePath = getConfigPathRelative(repoPath, 'package.json')
@@ -27,7 +32,7 @@ async function run(): Promise<void> {
     core.debug(`wechatKey:${wechatKey}`)
     const {repository, commits} = pushPayload || {}
     const {full_name} = repository || {}
-    const branch = headBranch || ref.replace('refs/heads/', '')
+    const branch = getTiggerBranches({headBranch, ref})
     console.log('branch-----', branch)
     const params = {
       repository: full_name,
@@ -35,7 +40,7 @@ async function run(): Promise<void> {
       headBranch: branch,
       baseBranch: '',
       commits: commits.reverse(),
-      syncBranches: `${syncBranches},${packageJson[branch]}`,
+      syncBranches: getSyncBranches({syncBranches, packageJson, branch}),
       wechatKey: `https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=${wechatKey}`
     }
     await action(params)
