@@ -127,7 +127,7 @@ exports.formatCommits = formatCommits;
 const composeMsg = (info) => {
     const { commitsList, head, repository } = info || {};
     if (!commitsList.length) {
-        return `#### 🤔项目${repository}，分支${head}环境正在部署~~,无新commit`;
+        return `🤔项目${repository}，分支${head}环境正在部署~~,无新commit`;
     }
     const commitsString = commitsList
         .map((item) => {
@@ -226,20 +226,23 @@ const mergeBranch = (params) => __awaiter(void 0, void 0, void 0, function* () {
     const arr = syncBranches.split(',');
     const branches = [...new Set(arr)].filter(Boolean);
     for (const baseBranch of branches) {
+        const base = baseBranch.trim();
         try {
-            yield (0, axios_1.default)({
-                method: 'POST',
-                headers: {
-                    Accept: 'application/vnd.github.v3+json',
-                    'content-type': 'application/json',
-                    Authorization: `Bearer ${githubToken}`
-                },
-                url: (0, base_1.getMergeUrl)(repository),
-                data: {
-                    base: baseBranch.trim(),
-                    head: headBranch
-                }
-            });
+            if (base) {
+                yield (0, axios_1.default)({
+                    method: 'POST',
+                    headers: {
+                        Accept: 'application/vnd.github.v3+json',
+                        'content-type': 'application/json',
+                        Authorization: `Bearer ${githubToken}`
+                    },
+                    url: (0, base_1.getMergeUrl)(repository),
+                    data: {
+                        base,
+                        head: headBranch
+                    }
+                });
+            }
         }
         catch (error) {
             console.error('mergeBranch----', error);
@@ -247,7 +250,7 @@ const mergeBranch = (params) => __awaiter(void 0, void 0, void 0, function* () {
             const { status, statusText, data } = response || {};
             const { message } = data || {};
             if (message.includes('protected branch')) {
-                const statusParams = Object.assign(Object.assign({}, params), { baseBranch });
+                const statusParams = Object.assign(Object.assign({}, params), { baseBranch: base });
                 yield (0, base_1.createPullRequest)(statusParams);
                 return;
             }
@@ -258,7 +261,7 @@ const mergeBranch = (params) => __awaiter(void 0, void 0, void 0, function* () {
             const result = {
                 msgtype: 'text',
                 text: {
-                    content: `❌项目${repository}:【${headBranch}】分支合并到【${baseBranch}】出错，出错原因：${message}${conflict}`,
+                    content: `❌项目${repository}:【${headBranch}】分支合并到【${base}】出错，出错原因：${message}${conflict}`,
                     mentioned_mobile_list: ['@all']
                 }
             };
@@ -326,6 +329,7 @@ const base_1 = __nccwpck_require__(7835);
 const repoPath = process.env.GITHUB_WORKSPACE;
 const pushPayload = github.context.payload;
 const ref = github.context.ref;
+console.log('github.context', github.context);
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
