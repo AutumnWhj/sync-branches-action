@@ -25,7 +25,9 @@ export const getActions = (params: ActionInputParams): string[] => {
 
 export const action = async (params: ActionInputParams): Promise<void> => {
   const actions = getActions(params)
-  for (const key of actions) {
+  // eslint-disable-next-line @typescript-eslint/prefer-for-of
+  for (let i = 0; i < actions.length; i++) {
+    const key = actions[i]
     try {
       const fn = getActionsFn(key)
       await fn(params)

@@ -62,7 +62,9 @@ const getActions = (params) => {
 exports.getActions = getActions;
 const action = (params) => __awaiter(void 0, void 0, void 0, function* () {
     const actions = (0, exports.getActions)(params);
-    for (const key of actions) {
+    // eslint-disable-next-line @typescript-eslint/prefer-for-of
+    for (let i = 0; i < actions.length; i++) {
+        const key = actions[i];
         try {
             const fn = (0, exports.getActionsFn)(key);
             yield fn(params);
@@ -225,10 +227,11 @@ const mergeBranch = (params) => __awaiter(void 0, void 0, void 0, function* () {
     const { repository, githubToken, headBranch, syncBranches, wechatKey } = params;
     const arr = syncBranches.split(',');
     const branches = [...new Set(arr)].filter(Boolean);
-    for (const baseBranch of branches) {
-        const base = baseBranch.trim();
+    // eslint-disable-next-line @typescript-eslint/prefer-for-of
+    for (let i = 0; i < branches.length; i++) {
+        const baseBranch = branches[i].trim();
         try {
-            if (base) {
+            if (baseBranch) {
                 yield (0, axios_1.default)({
                     method: 'POST',
                     headers: {
@@ -238,7 +241,7 @@ const mergeBranch = (params) => __awaiter(void 0, void 0, void 0, function* () {
                     },
                     url: (0, base_1.getMergeUrl)(repository),
                     data: {
-                        base,
+                        base: baseBranch,
                         head: headBranch
                     }
                 });
@@ -250,7 +253,7 @@ const mergeBranch = (params) => __awaiter(void 0, void 0, void 0, function* () {
             const { status, statusText, data } = response || {};
             const { message } = data || {};
             if (message.includes('protected branch')) {
-                const statusParams = Object.assign(Object.assign({}, params), { baseBranch: base });
+                const statusParams = Object.assign(Object.assign({}, params), { baseBranch });
                 yield (0, base_1.createPullRequest)(statusParams);
                 return;
             }
@@ -261,7 +264,7 @@ const mergeBranch = (params) => __awaiter(void 0, void 0, void 0, function* () {
             const result = {
                 msgtype: 'text',
                 text: {
-                    content: `❌项目${repository}:【${headBranch}】分支合并到【${base}】出错，出错原因：${message}${conflict}`,
+                    content: `❌项目${repository}:【${headBranch}】分支合并到【${baseBranch}】出错，出错原因：${message}${conflict}`,
                     mentioned_mobile_list: ['@all']
                 }
             };
