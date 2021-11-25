@@ -17,8 +17,9 @@ jobs:
       - name: Use env branch
         # env:
         # BRANCH: '${{ steps.hello.outputs.branch }}'
-        run: echo "BRANCH=$BRANCH" >> $GITHUB_ENV
+        run: echo env.BRANCH
       - name: Use env repository
         # env:
         # REPOSITORY: '${{ steps.hello.outputs.repository }}'
-        run: echo "REPOSITORY=$REPOSITORY" >> $GITHUB_ENV
+        run: |
+          echo env.REPOSITORY
