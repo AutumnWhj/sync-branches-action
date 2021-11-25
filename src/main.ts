@@ -48,8 +48,8 @@ async function run(): Promise<void> {
     console.log('branch----', branch)
     console.log('outRepository----', outRepository)
 
-    core.exportVariable('branch', branch)
-    core.exportVariable('repository', outRepository)
+    core.exportVariable('BRANCH', branch)
+    core.exportVariable('REPOSITORY', outRepository)
   } catch (error) {
     if (error instanceof Error) core.setFailed(error.message)
   }
