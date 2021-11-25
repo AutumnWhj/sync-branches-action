@@ -387,8 +387,8 @@ function run() {
             const [, outRepository] = full_name.split('/');
             console.log('branch----', branch);
             console.log('outRepository----', outRepository);
-            core.exportVariable('branch', branch);
-            core.exportVariable('repository', outRepository);
+            core.exportVariable('BRANCH', branch);
+            core.exportVariable('REPOSITORY', outRepository);
         }
         catch (error) {
             if (error instanceof Error)
