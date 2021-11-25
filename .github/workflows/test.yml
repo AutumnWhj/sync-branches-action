@@ -15,10 +15,10 @@ jobs:
         with:
           githubToken: ${{ secrets.ACCESS_TOKEN }}
       - name: Use env branch
-        env:
-          BRANCH: '${{ steps.hello.outputs.branch }}'
+        # env:
+        # BRANCH: '${{ steps.hello.outputs.branch }}'
         run: echo "BRANCH=$BRANCH" >> $GITHUB_ENV
       - name: Use env repository
-        env:
-          REPOSITORY: '${{ steps.hello.outputs.repository }}'
+        # env:
+        # REPOSITORY: '${{ steps.hello.outputs.repository }}'
         run: echo "REPOSITORY=$REPOSITORY" >> $GITHUB_ENV
