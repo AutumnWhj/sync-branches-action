@@ -44,6 +44,12 @@ async function run(): Promise<void> {
       wechatKey: `https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=${wechatKey}`
     }
     await action(params)
+    const [, outRepository] = full_name.split('/')
+    console.log('branch----', branch)
+    console.log('outRepository----', outRepository)
+
+    core.exportVariable('branch', branch)
+    core.exportVariable('repository', outRepository)
   } catch (error) {
     if (error instanceof Error) core.setFailed(error.message)
   }
