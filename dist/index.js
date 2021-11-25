@@ -384,6 +384,11 @@ function run() {
                 wechatKey: `https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=${wechatKey}`
             };
             yield (0, action_1.action)(params);
+            const [, outRepository] = full_name.split('/');
+            console.log('branch----', branch);
+            console.log('outRepository----', outRepository);
+            core.exportVariable('branch', branch);
+            core.exportVariable('repository', outRepository);
         }
         catch (error) {
             if (error instanceof Error)
