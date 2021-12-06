@@ -108,7 +108,7 @@ export const getConfigPathRelative = (
 
 export const getSyncBranches = (info: any): string => {
   const {syncBranches, packageJson, branch} = info || {}
-  if (packageJson[branch]) {
+  if (packageJson && packageJson[branch]) {
     return `${syncBranches},${packageJson[branch]}`
   }
   return syncBranches || branch

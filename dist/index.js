@@ -198,7 +198,7 @@ const getConfigPathRelative = (repoPath, location) => {
 exports.getConfigPathRelative = getConfigPathRelative;
 const getSyncBranches = (info) => {
     const { syncBranches, packageJson, branch } = info || {};
-    if (packageJson[branch]) {
+    if (packageJson && packageJson[branch]) {
         return `${syncBranches},${packageJson[branch]}`;
     }
     return syncBranches || branch;
