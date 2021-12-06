@@ -8,6 +8,9 @@ inputs:
   githubToken:
     required: true
     description: 'github仓库的访问权限token'
+  repository:
+    required: false
+    description: 'github仓库名字'
   syncBranches:
     required: false
     description: 'head分支更新后要同步的分支, 也可写在package.json中'
