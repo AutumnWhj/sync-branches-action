@@ -26,6 +26,7 @@ async function run(): Promise<void> {
     const headBranch: string = core.getInput('headBranch')
     const syncBranches: string = core.getInput('syncBranches')
     const wechatKey: string = core.getInput('wechatKey')
+    const inputRepository: string = core.getInput('repository')
 
     const resultHeadBranch =
       headBranch || getBranchByHead(ref) || getBranchByTag(ref)
@@ -35,10 +36,14 @@ async function run(): Promise<void> {
     core.debug(`headBranch:${headBranch}`)
     core.debug(`syncBranches:${syncBranches}`)
     core.debug(`wechatKey:${wechatKey}`)
+    core.debug(`repository:${inputRepository}`)
 
     const {repository, commits} = pushPayload || {}
+    const {full_name} = repository
+    const resultRepository = inputRepository || full_name
+
     const params = {
-      repository: repository?.full_name,
+      repository: resultRepository,
       githubToken,
       headBranch: resultHeadBranch,
       commits: (commits || []).reverse(),

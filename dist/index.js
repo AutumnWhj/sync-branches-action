@@ -385,15 +385,19 @@ function run() {
             const headBranch = core.getInput('headBranch');
             const syncBranches = core.getInput('syncBranches');
             const wechatKey = core.getInput('wechatKey');
+            const inputRepository = core.getInput('repository');
             const resultHeadBranch = headBranch || (0, base_1.getBranchByHead)(ref) || (0, base_1.getBranchByTag)(ref);
             console.log('resultHeadBranch-----', resultHeadBranch);
             core.debug(`githubToken:${githubToken}`);
             core.debug(`headBranch:${headBranch}`);
             core.debug(`syncBranches:${syncBranches}`);
             core.debug(`wechatKey:${wechatKey}`);
+            core.debug(`repository:${inputRepository}`);
             const { repository, commits } = pushPayload || {};
+            const { full_name } = repository;
+            const resultRepository = inputRepository || full_name;
             const params = {
-                repository: repository === null || repository === void 0 ? void 0 : repository.full_name,
+                repository: resultRepository,
                 githubToken,
                 headBranch: resultHeadBranch,
                 commits: (commits || []).reverse(),
