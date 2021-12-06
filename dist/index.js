@@ -313,13 +313,15 @@ const mergeBranch = (params) => __awaiter(void 0, void 0, void 0, function* () {
 exports.mergeBranch = mergeBranch;
 const sendMsg = (params) => __awaiter(void 0, void 0, void 0, function* () {
     const { repository, headBranch, commits, wechatKey } = params;
-    const commitsList = (0, base_1.formatCommits)(commits);
-    const content = (0, base_1.composeMsg)({ commitsList, head: headBranch, repository });
-    const result = {
-        msgtype: 'markdown',
-        markdown: { content }
-    };
-    yield (0, base_1.sendMsgToWeChat)({ result, webHook: wechatKey });
+    if (commits.length) {
+        const commitsList = (0, base_1.formatCommits)(commits);
+        const content = (0, base_1.composeMsg)({ commitsList, head: headBranch, repository });
+        const result = {
+            msgtype: 'markdown',
+            markdown: { content }
+        };
+        yield (0, base_1.sendMsgToWeChat)({ result, webHook: wechatKey });
+    }
 });
 exports.sendMsg = sendMsg;
 
@@ -394,7 +396,7 @@ function run() {
                 repository: repository === null || repository === void 0 ? void 0 : repository.full_name,
                 githubToken,
                 headBranch: resultHeadBranch,
-                commits: commits.reverse(),
+                commits: (commits || []).reverse(),
                 syncBranches: (0, base_1.getSyncBranches)({
                     syncBranches,
                     packageJson,

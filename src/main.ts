@@ -41,7 +41,7 @@ async function run(): Promise<void> {
       repository: repository?.full_name,
       githubToken,
       headBranch: resultHeadBranch,
-      commits: commits.reverse(),
+      commits: (commits || []).reverse(),
       syncBranches: getSyncBranches({
         syncBranches,
         packageJson,
