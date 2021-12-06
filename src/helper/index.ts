@@ -64,11 +64,13 @@ export const mergeBranch = async (params: ActionInputParams): Promise<void> => {
 
 export const sendMsg = async (params: ActionInputParams): Promise<void> => {
   const {repository, headBranch, commits, wechatKey} = params
-  const commitsList = formatCommits(commits)
-  const content = composeMsg({commitsList, head: headBranch, repository})
-  const result = {
-    msgtype: 'markdown',
-    markdown: {content}
+  if (commits.length) {
+    const commitsList = formatCommits(commits)
+    const content = composeMsg({commitsList, head: headBranch, repository})
+    const result = {
+      msgtype: 'markdown',
+      markdown: {content}
+    }
+    await sendMsgToWeChat({result, webHook: wechatKey})
   }
-  await sendMsgToWeChat({result, webHook: wechatKey})
 }
