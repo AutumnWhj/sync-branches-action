@@ -38,7 +38,7 @@ export const mergeBranch = async (params: ActionInputParams): Promise<void> => {
       const {response} = (error as any) || {}
       const {status, statusText, data} = response || {}
       const {message} = data || {}
-      if (message.includes('protected branch')) {
+      if (message.includes('protected')) {
         const statusParams = {
           ...params,
           baseBranch
