@@ -3,9 +3,10 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
 import {
+  getBranchByHead,
+  getBranchByTag,
   getConfigPathRelative,
-  getSyncBranches,
-  getTiggerBranches
+  getSyncBranches
 } from './helper/base'
 import {action} from './action'
 // debug is only output if you set the secret `ACTIONS_STEP_DEBUG` to true
@@ -26,30 +27,41 @@ async function run(): Promise<void> {
     const syncBranches: string = core.getInput('syncBranches')
     const wechatKey: string = core.getInput('wechatKey')
 
+    const resultHeadBranch =
+      headBranch || getBranchByHead(ref) || getBranchByTag(ref)
+
+    console.log('resultHeadBranch-----', resultHeadBranch)
     core.debug(`githubToken:${githubToken}`)
     core.debug(`headBranch:${headBranch}`)
     core.debug(`syncBranches:${syncBranches}`)
     core.debug(`wechatKey:${wechatKey}`)
+
     const {repository, commits} = pushPayload || {}
-    const {full_name} = repository || {}
-    const branch = getTiggerBranches({headBranch, ref})
-    console.log('branch-----', branch)
     const params = {
-      repository: full_name,
+      repository: repository?.full_name,
       githubToken,
-      headBranch: branch,
-      baseBranch: '',
+      headBranch: resultHeadBranch,
       commits: commits.reverse(),
-      syncBranches: getSyncBranches({syncBranches, packageJson, branch}),
+      syncBranches: getSyncBranches({
+        syncBranches,
+        packageJson,
+        branch: resultHeadBranch
+      }),
       wechatKey: `https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=${wechatKey}`
     }
     await action(params)
-    const [, outRepository] = full_name.split('/')
-    console.log('branch----', branch)
-    console.log('outRepository----', outRepository)
 
-    core.exportVariable('BRANCH', branch)
-    core.exportVariable('REPOSITORY', outRepository)
+    // const {full_name} = repository || {}
+    // const [, outRepository] = full_name.split('/')
+    console.log('resultHeadBranch-----', resultHeadBranch)
+
+    // const exportBranch = getExportBranch({headBranch, ref})
+    // console.log('exportBranch----', exportBranch)
+    // console.log('outRepository----', outRepository)
+
+    // core.exportVariable('BRANCH', resultHeadBranch)
+    // core.exportVariable('TAGBRANCH', exportBranch)
+    // core.exportVariable('REPOSITORY', outRepository)
   } catch (error) {
     if (error instanceof Error) core.setFailed(error.message)
   }

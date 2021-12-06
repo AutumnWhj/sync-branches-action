@@ -99,7 +99,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.getTiggerBranches = exports.getSyncBranches = exports.getConfigPathRelative = exports.createPullRequest = exports.sendMsgToWeChat = exports.composeMsg = exports.formatCommits = exports.getMergeUrl = void 0;
+exports.getExportBranch = exports.getBranchByTag = exports.getBranchByHead = exports.getSyncBranches = exports.getConfigPathRelative = exports.createPullRequest = exports.sendMsgToWeChat = exports.composeMsg = exports.formatCommits = exports.getMergeUrl = void 0;
 /* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const axios_1 = __importDefault(__nccwpck_require__(6545));
@@ -201,22 +201,39 @@ const getSyncBranches = (info) => {
     if (packageJson[branch]) {
         return `${syncBranches},${packageJson[branch]}`;
     }
-    return syncBranches;
+    return syncBranches || branch;
 };
 exports.getSyncBranches = getSyncBranches;
-const getTiggerBranches = (info) => {
-    const { headBranch, ref } = info || {};
+const getBranchByHead = (ref) => {
+    if (ref.includes('refs/heads/')) {
+        return ref.replace('refs/heads/', '');
+    }
+    return '';
+};
+exports.getBranchByHead = getBranchByHead;
+const getBranchByTag = (ref) => {
+    if (ref.includes('refs/tags/release/')) {
+        const commitMsg = ref.replace('refs/tags/', '');
+        const index = commitMsg.lastIndexOf('-v');
+        return commitMsg.slice(0, index);
+    }
+    return '';
+};
+exports.getBranchByTag = getBranchByTag;
+// release/dingding-dev-v0.1.3-2021-12-06
+const getExportBranch = (info) => {
+    const { ref } = info || {};
     if (ref.includes('refs/heads/')) {
         return ref.replace('refs/heads/', '');
     }
     if (ref.includes('refs/tags/release/')) {
-        const commitMsg = ref.replace('refs/tags/release/', '');
-        const index = commitMsg.lastIndexOf('-v');
+        const commitMsg = ref.replace('refs/tags/', '');
+        const index = commitMsg.lastIndexOf('-dev-v');
         return commitMsg.slice(0, index);
     }
-    return headBranch;
+    return '';
 };
-exports.getTiggerBranches = getTiggerBranches;
+exports.getExportBranch = getExportBranch;
 
 
 /***/ }),
@@ -273,7 +290,7 @@ const mergeBranch = (params) => __awaiter(void 0, void 0, void 0, function* () {
             const { response } = error || {};
             const { status, statusText, data } = response || {};
             const { message } = data || {};
-            if (message.includes('protected branch')) {
+            if (message.includes('protected')) {
                 const statusParams = Object.assign(Object.assign({}, params), { baseBranch });
                 yield (0, base_1.createPullRequest)(statusParams);
                 return;
@@ -366,29 +383,35 @@ function run() {
             const headBranch = core.getInput('headBranch');
             const syncBranches = core.getInput('syncBranches');
             const wechatKey = core.getInput('wechatKey');
+            const resultHeadBranch = headBranch || (0, base_1.getBranchByHead)(ref) || (0, base_1.getBranchByTag)(ref);
+            console.log('resultHeadBranch-----', resultHeadBranch);
             core.debug(`githubToken:${githubToken}`);
             core.debug(`headBranch:${headBranch}`);
             core.debug(`syncBranches:${syncBranches}`);
             core.debug(`wechatKey:${wechatKey}`);
             const { repository, commits } = pushPayload || {};
-            const { full_name } = repository || {};
-            const branch = (0, base_1.getTiggerBranches)({ headBranch, ref });
-            console.log('branch-----', branch);
             const params = {
-                repository: full_name,
+                repository: repository === null || repository === void 0 ? void 0 : repository.full_name,
                 githubToken,
-                headBranch: branch,
-                baseBranch: '',
+                headBranch: resultHeadBranch,
                 commits: commits.reverse(),
-                syncBranches: (0, base_1.getSyncBranches)({ syncBranches, packageJson, branch }),
+                syncBranches: (0, base_1.getSyncBranches)({
+                    syncBranches,
+                    packageJson,
+                    branch: resultHeadBranch
+                }),
                 wechatKey: `https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=${wechatKey}`
             };
             yield (0, action_1.action)(params);
-            const [, outRepository] = full_name.split('/');
-            console.log('branch----', branch);
-            console.log('outRepository----', outRepository);
-            core.exportVariable('BRANCH', branch);
-            core.exportVariable('REPOSITORY', outRepository);
+            // const {full_name} = repository || {}
+            // const [, outRepository] = full_name.split('/')
+            console.log('resultHeadBranch-----', resultHeadBranch);
+            // const exportBranch = getExportBranch({headBranch, ref})
+            // console.log('exportBranch----', exportBranch)
+            // console.log('outRepository----', outRepository)
+            // core.exportVariable('BRANCH', resultHeadBranch)
+            // core.exportVariable('TAGBRANCH', exportBranch)
+            // core.exportVariable('REPOSITORY', outRepository)
         }
         catch (error) {
             if (error instanceof Error)

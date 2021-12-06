@@ -111,17 +111,34 @@ export const getSyncBranches = (info: any): string => {
   if (packageJson[branch]) {
     return `${syncBranches},${packageJson[branch]}`
   }
-  return syncBranches
+  return syncBranches || branch
 }
-export const getTiggerBranches = (info: any): string => {
-  const {headBranch, ref} = info || {}
+
+export const getBranchByHead = (ref: string): string => {
+  if (ref.includes('refs/heads/')) {
+    return ref.replace('refs/heads/', '')
+  }
+  return ''
+}
+
+export const getBranchByTag = (ref: string): string => {
+  if (ref.includes('refs/tags/release/')) {
+    const commitMsg = ref.replace('refs/tags/', '')
+    const index = commitMsg.lastIndexOf('-v')
+    return commitMsg.slice(0, index)
+  }
+  return ''
+}
+// release/dingding-dev-v0.1.3-2021-12-06
+export const getExportBranch = (info: any): string => {
+  const {ref} = info || {}
   if (ref.includes('refs/heads/')) {
     return ref.replace('refs/heads/', '')
   }
   if (ref.includes('refs/tags/release/')) {
-    const commitMsg = ref.replace('refs/tags/release/', '')
-    const index = commitMsg.lastIndexOf('-v')
+    const commitMsg = ref.replace('refs/tags/', '')
+    const index = commitMsg.lastIndexOf('-dev-v')
     return commitMsg.slice(0, index)
   }
-  return headBranch
+  return ''
 }
